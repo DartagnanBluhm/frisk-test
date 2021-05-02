@@ -38,7 +38,7 @@ app.delete("/delete/:id", async(req, res) => {
         const {id} = req.params;
         const post = await db.query("DELETE FROM posts WHERE post_id = $1", 
         [id])
-        res.status(200).send("Entry sucessfully deleted.")
+        res.status(200).send("Entry successfully deleted.")
     } catch (error) {
         res.status(500).send(error.message)
     }
@@ -47,9 +47,15 @@ app.delete("/delete/:id", async(req, res) => {
 app.post("/auth", async(req, res) =>{
     console.log("Received post message authorisation request")
     try {
-        const {post_id, resPin}  = req.body;
+        console.log(req.body)
+        const {post_id, post_pin}  = req.body;
         const data = await db.query("SELECT post_pin, post_message FROM posts WHERE post_id = $1", [post_id])
-        res.status(200).send(data)
+        console.log(data.rows[0].post_pin, post_pin)
+        if (post_pin == data.rows[0].post_pin){
+            res.status(200).send(data.rows[0])
+        }else{
+            res.status(406).send("Invalid PIN")
+        }
     } catch (error) {
         res.status(500).send(error.message)
     }
