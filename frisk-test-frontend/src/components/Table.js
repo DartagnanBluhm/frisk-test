@@ -5,6 +5,7 @@ export default function Table() {
 
     const [postid, setPostid] = useState("")
     const [visible, setVisible] = useState(false)
+    const [messageReveal, setMessageReveal] = useState(false)
     const [pin, setPin] = useState("")
     const [posts, addPosts] = useState([])
     const [Modal, open, close] = useModal('root', {
@@ -37,12 +38,13 @@ export default function Table() {
                 const data = await res.json()
                 console.log(data)
                 console.log(posts)
-                for (var i = 0, row; row = posts[i]; i++) {
+                for (var i = 0; i < posts.length; i++) {
                     if (posts[i].post_id === postid) {
                         posts[i].post_message = data.post_message
                         break;
                     }
                 }
+                setMessageReveal(true)
                 console.log(posts)
                 close()
             } else {
@@ -94,7 +96,7 @@ export default function Table() {
                         <tr key={post.post_id}>
                             <td>{post.post_creation}</td>
                             <td>{post.post_name}</td>
-                            <td>{post.message == "" ? post.message : <button className="btn" onClick={() => savePostID(post.post_id)}>Reveal</button>}</td>
+                            <td>{messageReveal ? post.message : <button className="btn" onClick={() => savePostID(post.post_id)}>Reveal</button>}</td>
                             <td><button className="btn" onClick={() => deletePost(post.post_id)}>Delete</button></td>
                         </tr>
                     ))}
