@@ -18,12 +18,34 @@ h1 {
   margin-top: 0px;
 }
 
-.body-content{
+h3 {
+  color: white;
+  text-align: center;
+}
+
+.body-content {
   background: #1b1f22;
   min-height: 100vh;
 }
 
-.table{
+.body-content .form-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+}
+
+.popup-content .popup-buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.popup-content .popup-buttons .popup-btn {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.table {
   margin: auto;
   align-items: center;
   border: 1px;
@@ -37,8 +59,7 @@ h1 {
   text-transform: uppercase;
 }
 
-.body-content .table-content td,
-th {
+.body-content .table-content td, th {
   padding-left: 5px;
   padding-right: 5px;
   border: 1px;
@@ -47,4 +68,31 @@ th {
   font-size: 12px;
   font-weight: 500;
   text-transform: capitalize;
+}
+
+.form-content .form-name-content, .form-email-content, .form-pin-content, .form-message-content {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+}
+
+.form-label {
+  width: 80px;
+}
+
+.form-input {
+  flex: 1 1 auto;
+}
+
+.form-content {
+  width: 400px;
+}
+
+.form-content form {
+  width: 100%;
+}
+
+.popup-pin-notif {
+  color:red;
+  text-align: center;
 }

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import useModal from 'react-hooks-use-modal'
-import PinInput from 'react-code-input'
 
 export default function Table() {
 
     const [postid, setPostid] = useState("")
+    const [visible, setVisible] = useState(false)
     const [pin, setPin] = useState("")
     const [posts, addPosts] = useState([])
     const [Modal, open, close] = useModal('root', {
@@ -25,16 +25,30 @@ export default function Table() {
         }
     }
 
-    //need to out how to get the value from the pin input, check it, then turn it as isvalid false
     const verifyPin = async e => {
+        e.preventDefault()
         try {
             const res = await fetch("http://localhost:5000/auth", {
                 method: 'POST',
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({post_id: postid})
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postid, post_pin: pin })
             })
-            console.log(await res.json())
-            close()
+            if (res.status === 200) {
+                const data = await res.json()
+                console.log(data)
+                console.log(posts)
+                for (var i = 0, row; row = posts[i]; i++) {
+                    if (posts[i].post_id === postid) {
+                        posts[i].post_message = data.post_message
+                        break;
+                    }
+                }
+                console.log(posts)
+                close()
+            } else {
+                setVisible(true)
+            }
+            setPin("")
         } catch (error) {
             console.log(error.message)
         }
@@ -42,7 +56,7 @@ export default function Table() {
 
     const deletePost = async (id) => {
         try {
-            console.log(fetch(`http://localhost:5000/delete/${id}`, {method: "DELETE"}))
+            console.log(fetch(`http://localhost:5000/delete/${id}`, { method: "DELETE" }))
             addPosts(posts.filter(p => p.post_id !== id))
         } catch (error) {
             console.log(error.message)
@@ -51,11 +65,17 @@ export default function Table() {
 
     const savePostID = (post_id) => {
         try {
+            setVisible(false)
             setPostid(post_id)
             open()
         } catch (error) {
             console.log(error.message)
         }
+    }
+
+    const exitModal = () => {
+        setVisible(false)
+        close()
     }
 
     return (
@@ -74,18 +94,22 @@ export default function Table() {
                         <tr key={post.post_id}>
                             <td>{post.post_creation}</td>
                             <td>{post.post_name}</td>
-                            <td><button className="btn" onClick={() => savePostID(post.post_id)}>Reveal</button></td>
+                            <td>{post.message == "" ? post.message : <button className="btn" onClick={() => savePostID(post.post_id)}>Reveal</button>}</td>
                             <td><button className="btn" onClick={() => deletePost(post.post_id)}>Delete</button></td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            <Modal visible={false} width="800" height="400" effect="fadeInDown" onClickAway={close}>
+            <Modal visible={false} width="800" height="400" effect="fadeInDown">
                 <div className="popup-content">
+                    <h3>Please enter a pin</h3>
+                    {visible ? <div className="popup-pin-notif"><p>Invalid Pin</p></div> : null}
                     <form onSubmit={verifyPin}>
-                        <PinInput id="pin-input" type="tel" fields={4} onChange={e => setPin(e.target.value)}/>
-                        <input type="submit" value="Submit" className="btn"></input>
-                        <button onClick={close}>Cancel</button>
+                        <input type="number" id="list-pin-input" onChange={e => setPin(e.target.value)}></input>
+                        <div className="popup-buttons">
+                            <input type="submit" value="Submit" className="btn popup-btn"></input>
+                            <button className="btn popup-btn" onClick={exitModal}>Cancel</button>
+                        </div>
                     </form>
                 </div>
             </Modal>
