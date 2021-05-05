@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 
 export default function Form() {
 
-    //states
+    // STATES
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [pin, setPin] = useState("")
     const [message, setMessage] = useState("")
 
-    //Submits a post to the api for storage in the database
+    //Submits a request to insert a post to the database via the api.
     const SubmitForm = async e => {
         e.preventDefault()
         try {

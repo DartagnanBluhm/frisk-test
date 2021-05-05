@@ -7,7 +7,7 @@ app.use(express.json())
 app.use(cors())
 
 //DATABASE QUERIES
-//get all posts as json
+//all GET endpoint will respond with all posts in the database. 
 app.get("/all", async (req, res) => {
     try {
         const post = await db.query("SELECT post_id, post_email, post_name, post_creation FROM posts")
@@ -23,7 +23,7 @@ app.get("/all", async (req, res) => {
     }
 })
 
-//save post into database
+//post POST endpoint with insert a post into the database
 app.post("/post", async (req, res) => {
     try {
         const data = req.body;
@@ -37,13 +37,13 @@ app.post("/post", async (req, res) => {
     }
 })
 
-//delete post from database via post_id
+//delete DELETE endpoint will remove a specified post_id entry from the database
 app.delete("/delete/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const post = await db.query("DELETE FROM posts WHERE post_id = $1",
             [id])
-        res.status(200).send("Entry successfully deleted.")
+        res.status(200)
         console.log("200 -> /delete")
     } catch (error) {
         res.status(500).send(error.message)
@@ -51,6 +51,7 @@ app.delete("/delete/:id", async (req, res) => {
     }
 })
 
+//auth POST endpoint will verify the pin of a post and respond with 200 -> ok or 406 -> invalid pin
 app.post("/auth", async (req, res) => {
     try {
         const { post_id, post_pin } = req.body;
@@ -68,6 +69,7 @@ app.post("/auth", async (req, res) => {
     }
 })
 
+//api listens on the port 5000 on localhost
 app.listen(5000, () => {
     console.log("API listening on port 5000.")
 })

@@ -4,6 +4,7 @@ import { CSVDownload } from 'react-csv'
 
 export default function Table() {
 
+    // STATES
     const [postid, setPostid] = useState("")
     const [pinNotifVisible, setPinNotifVisible] = useState(false)
     const [exportCSV, setExportCSV] = useState(false)
@@ -14,10 +15,12 @@ export default function Table() {
         preventScroll: true
     })
 
+    //Periodically refreshes the tables by calling pullPosts routine
     useEffect(() => {
         pullPosts()
     }, [])
 
+    //pullPosts will request all available posts from the api and save them in the posts state.
     const pullPosts = async () => {
         try {
             const res = await fetch("http://localhost:5000/all")
@@ -28,6 +31,8 @@ export default function Table() {
         }
     }
 
+    //verifyPin will attempt to retrieve the post message by querying the api with the supplied pin
+    //The api will respond with a 200 status if correct and return the post message.
     const verifyPin = async e => {
         e.preventDefault()
         try {
@@ -54,6 +59,7 @@ export default function Table() {
         }
     }
 
+    //deletePost sends a delete request to the api with specified post id
     const deletePost = async (id) => {
         try {
             console.log(await fetch(`http://localhost:5000/delete/${id}`, { method: "DELETE" }))
@@ -63,6 +69,7 @@ export default function Table() {
         }
     }
 
+    //savePostID saves the supplied post id and opens the pin modal for pin verification 
     const savePostID = (post_id) => {
         try {
             setPinNotifVisible(false)
@@ -73,11 +80,7 @@ export default function Table() {
         }
     }
 
-    const exitModal = () => {
-        setPinNotifVisible(false)
-        close()
-    }
-
+    //exportSelectedRows grabs all posts that have been selected and exports them as a CSV
     const exportSelectedRows = async () => {
         const children = document.getElementById("table-data").childNodes
         var exportData = []
@@ -102,6 +105,7 @@ export default function Table() {
         }
     }
 
+    //sleep serves as a function to freeze a routine temporarily
     const sleep = (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -138,7 +142,7 @@ export default function Table() {
                         <input type="number" id="list-pin-input" onChange={e => setPin(e.target.value)}></input>
                         <div className="popup-buttons">
                             <input type="submit" value="Submit" className="btn popup-btn"></input>
-                            <button className="btn popup-btn" onClick={exitModal}>Cancel</button>
+                            <button className="btn popup-btn" onClick={close}>Cancel</button>
                         </div>
                     </form>
                 </div>
