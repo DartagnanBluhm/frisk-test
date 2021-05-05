@@ -4,10 +4,9 @@ import useModal from 'react-hooks-use-modal'
 export default function Table() {
 
     const [postid, setPostid] = useState("")
-    const [visible, setVisible] = useState(false)
-    const [messageReveal, setMessageReveal] = useState(false)
+    const [pinNotifVisible, setPinNotifVisible] = useState(false)
     const [pin, setPin] = useState("")
-    const [posts, addPosts] = useState([])
+    const [posts, setPosts] = useState([])
     const [Modal, open, close] = useModal('root', {
         preventScroll: true
     })
@@ -19,8 +18,7 @@ export default function Table() {
     const pullPosts = async () => {
         try {
             const res = await fetch("http://localhost:5000/all")
-            const tableData = await res.json()
-            addPosts(tableData)
+            setPosts(await res.json())
         } catch (error) {
             console.log(error.message)
         }
@@ -44,11 +42,10 @@ export default function Table() {
                         break;
                     }
                 }
-                setMessageReveal(true)
                 console.log(posts)
                 close()
             } else {
-                setVisible(true)
+                setPinNotifVisible(true)
             }
             setPin("")
         } catch (error) {
@@ -58,17 +55,18 @@ export default function Table() {
 
     const deletePost = async (id) => {
         try {
-            console.log(fetch(`http://localhost:5000/delete/${id}`, { method: "DELETE" }))
-            addPosts(posts.filter(p => p.post_id !== id))
+            console.log(await fetch(`http://localhost:5000/delete/${id}`, { method: "DELETE" }))
+            setPosts(posts.filter(p => p.post_id !== id))
         } catch (error) {
             console.log(error.message)
         }
     }
 
-    const savePostID = (post_id) => {
+    const savePostID = (post_id, showMessage) => {
         try {
-            setVisible(false)
+            setPinNotifVisible(false)
             setPostid(post_id)
+            
             open()
         } catch (error) {
             console.log(error.message)
@@ -76,7 +74,7 @@ export default function Table() {
     }
 
     const exitModal = () => {
-        setVisible(false)
+        setPinNotifVisible(false)
         close()
     }
 
@@ -96,7 +94,7 @@ export default function Table() {
                         <tr key={post.post_id}>
                             <td>{post.post_creation}</td>
                             <td>{post.post_name}</td>
-                            <td>{messageReveal ? post.message : <button className="btn" onClick={() => savePostID(post.post_id)}>Reveal</button>}</td>
+                            <td>{post.post_message !== "" ? post.post_message : <button className="btn" onClick={() => savePostID(post.post_id)}>Reveal</button>}</td>
                             <td><button className="btn" onClick={() => deletePost(post.post_id)}>Delete</button></td>
                         </tr>
                     ))}
@@ -105,7 +103,7 @@ export default function Table() {
             <Modal visible={false} width="800" height="400" effect="fadeInDown">
                 <div className="popup-content">
                     <h3>Please enter a pin</h3>
-                    {visible ? <div className="popup-pin-notif"><p>Invalid Pin</p></div> : null}
+                    {pinNotifVisible ? <div className="popup-pin-notif"><p>Invalid Pin</p></div> : null}
                     <form onSubmit={verifyPin}>
                         <input type="number" id="list-pin-input" onChange={e => setPin(e.target.value)}></input>
                         <div className="popup-buttons">
