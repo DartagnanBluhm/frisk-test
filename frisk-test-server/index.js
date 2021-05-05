@@ -10,7 +10,8 @@ app.use(cors())
 //get all posts as json
 app.get("/all", async (req, res) => {
     try {
-        const post = await db.query("SELECT post_id, post_name, post_creation FROM posts")
+        const post = await db.query("SELECT post_id, post_email, post_name, post_creation FROM posts")
+        var sendData = new Map()
         for(var i = 0, row; row = post.rows[i];i++) {
             post.rows[i] = {...post.rows[i], post_message: ""}
         }

@@ -93,6 +93,14 @@ h3 {
 }
 
 .popup-pin-notif {
-  color:red;
+  color: red;
+  text-align: center;
+}
+
+.table-btn {
+  width: 100%;
+}
+
+.table-checkbox {
   text-align: center;
 }
