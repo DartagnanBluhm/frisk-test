@@ -12,8 +12,8 @@ app.get("/all", async (req, res) => {
     try {
         const post = await db.query("SELECT post_id, post_email, post_name, post_creation FROM posts")
         var sendData = new Map()
-        for(var i = 0, row; row = post.rows[i];i++) {
-            post.rows[i] = {...post.rows[i], post_message: ""}
+        for (var i = 0, row; row = post.rows[i]; i++) {
+            post.rows[i] = { ...post.rows[i], post_message: "" }
         }
         res.status(200).send(post.rows)
         console.log("200 -> /all")
@@ -41,10 +41,15 @@ app.post("/post", async (req, res) => {
 app.delete("/delete/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const post = await db.query("DELETE FROM posts WHERE post_id = $1",
-            [id])
-        res.status(200)
-        console.log("200 -> /delete")
+        if (!isNaN(id)) {
+            const post = await db.query("DELETE FROM posts WHERE post_id = $1",
+                [id])
+            res.status(200).send("Successful")
+            console.log("200 -> /delete")
+        } else {
+            res.status(406).send("post_id must be an integer")
+            console.log("406 -> /delete -> post_id must be an integer")
+        }
     } catch (error) {
         res.status(500).send(error.message)
         console.log(`500 -> /delete -> ${error.message}`)

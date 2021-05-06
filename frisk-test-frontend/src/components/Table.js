@@ -91,13 +91,11 @@ export default function Table() {
             if (child.childNodes.item(4).childNodes.item(0).checked) {
                 posts.filter(p => p.post_id == child.id.substring(10)).forEach(item => {
                     exportData.push(item)
-                    console.log(item)
                 })
             }
         })
         setCSVData(exportData)
         if (exportData.length !== 0) {
-            console.log(csvData)
             setExportCSV(true)
             await sleep(1)
             setExportCSV(false)
